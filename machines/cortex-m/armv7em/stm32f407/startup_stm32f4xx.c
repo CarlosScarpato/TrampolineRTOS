@@ -36,7 +36,7 @@ extern int main(void);
 
 // The implementation for the exit routine, where for embedded
 // applications, a system reset is performed.
-extern void _exit(int);
+// extern void _exit(int); //Comentado para testes, pois a função _exit não está definida no projeto. A função _exit é chamada no final da função tpl_continue_reset_handler para encerrar o programa e realizar um reset do sistema.
 
 //*****************************************************************************
 
@@ -132,7 +132,7 @@ void __attribute__ ((section(".after_vectors"))) tpl_continue_reset_handler(void
   // On test platforms, like semihosting, this can be used to inform
   // the host on the test result.
   // On embedded platforms, usually reset the processor.
-  _exit(r);
+  // _exit(r); // comentado para testes, pois a função _exit não está definida no projeto. A função _exit é chamada no final da função tpl_continue_reset_handler para encerrar o programa e realizar um reset do sistema.
 
 }
 

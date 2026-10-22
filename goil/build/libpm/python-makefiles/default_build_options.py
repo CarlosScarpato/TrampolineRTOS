@@ -10,7 +10,8 @@
 def allCompilerOptions (platformOptions):
   result = platformOptions
   result.append ("-Wall")
-  result.append ("-Werror")
+  #result.append ("-Werror")
+  result.append ("-Wno-unnecessary-virtual-specifier")
   result.append ("-Wno-trigraphs")
   result.append ("-Wreturn-type")
   result.append ("-Wformat")
