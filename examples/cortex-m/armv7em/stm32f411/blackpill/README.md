@@ -42,6 +42,7 @@ We present hereafter the successive steps to follow to get the first example [ b
 1 - Step into the example directory
 
     > cd examples/cortex-m/armv7em/stm32f407/stm32f4discovery/blink
+    > cd examples/cortex-m/armv7em/stm32f411/blackpill/blink
 
 2 - Generate all source files from a configuration with the command :
 
