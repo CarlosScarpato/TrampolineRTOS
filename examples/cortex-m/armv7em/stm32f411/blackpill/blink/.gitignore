@@ -6,3 +6,5 @@ build
 make.py
 build.py
 CMakeLists.txt
+ledtest
+adctest
