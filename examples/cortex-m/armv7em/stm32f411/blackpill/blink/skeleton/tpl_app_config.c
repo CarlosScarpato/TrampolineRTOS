@@ -54,14 +54,20 @@ CONST(tpl_application_mode, OS_CONST) std = 0; /* mask = 1 */
 CONST(tpl_application_mode, OS_CONST) OSDEFAULTAPPMODE = 0;
 CONST(tpl_appmode_mask, OS_CONST) tpl_task_app_mode[TASK_COUNT] = {
   0 /* task heartbeat :  */ ,
+  0 /* task Logging :  */ ,
+  0 /* task Diagnostics :  */ ,
   0 /* task Display :  */ ,
+  0 /* task Processing :  */ ,
   0 /* task Acquisition :  */ 
 };
 
 CONST(tpl_appmode_mask, OS_CONST) tpl_alarm_app_mode[ALARM_COUNT] = {
   1 /* alarm al_acq : std */ ,
+  1 /* alarm al_diag : std */ ,
   1 /* alarm al_disp : std */ ,
-  1 /* alarm al_hb : std */ 
+  1 /* alarm al_hb : std */ ,
+  1 /* alarm al_log : std */ ,
+  1 /* alarm al_proc : std */ 
 };
 
 #define API_START_SEC_CONST_UNSPECIFIED
@@ -75,12 +81,24 @@ CONST(tpl_appmode_mask, OS_CONST) tpl_alarm_app_mode[ALARM_COUNT] = {
 #define heartbeat_id 0
 CONST(TaskType, AUTOMATIC) heartbeat = heartbeat_id;
 
+/* Task Logging identifier */
+#define Logging_id 1
+CONST(TaskType, AUTOMATIC) Logging = Logging_id;
+
+/* Task Diagnostics identifier */
+#define Diagnostics_id 2
+CONST(TaskType, AUTOMATIC) Diagnostics = Diagnostics_id;
+
 /* Task Display identifier */
-#define Display_id 1
+#define Display_id 3
 CONST(TaskType, AUTOMATIC) Display = Display_id;
 
+/* Task Processing identifier */
+#define Processing_id 4
+CONST(TaskType, AUTOMATIC) Processing = Processing_id;
+
 /* Task Acquisition identifier */
-#define Acquisition_id 2
+#define Acquisition_id 5
 CONST(TaskType, AUTOMATIC) Acquisition = Acquisition_id;
 
 /*=============================================================================
@@ -91,13 +109,25 @@ CONST(TaskType, AUTOMATIC) Acquisition = Acquisition_id;
 #define al_acq_id 0
 CONST(AlarmType, AUTOMATIC) al_acq = al_acq_id;
 
+/* Alarm al_diag identifier */
+#define al_diag_id 1
+CONST(AlarmType, AUTOMATIC) al_diag = al_diag_id;
+
 /* Alarm al_disp identifier */
-#define al_disp_id 1
+#define al_disp_id 2
 CONST(AlarmType, AUTOMATIC) al_disp = al_disp_id;
 
 /* Alarm al_hb identifier */
-#define al_hb_id 2
+#define al_hb_id 3
 CONST(AlarmType, AUTOMATIC) al_hb = al_hb_id;
+
+/* Alarm al_log identifier */
+#define al_log_id 4
+CONST(AlarmType, AUTOMATIC) al_log = al_log_id;
+
+/* Alarm al_proc identifier */
+#define al_proc_id 5
+CONST(AlarmType, AUTOMATIC) al_proc = al_proc_id;
 
 #define API_STOP_SEC_CONST_UNSPECIFIED
 #include "tpl_memmap.h"
@@ -404,6 +434,204 @@ VAR(tpl_proc, OS_VAR) heartbeat_task_desc = {
 #include "tpl_memmap.h"
 
 /*-----------------------------------------------------------------------------
+ * Task Logging descriptor
+ */
+#define APP_Task_Logging_START_SEC_CODE
+
+#include "tpl_memmap.h"
+/*
+ * Task Logging function prototype
+ */
+
+FUNC(void, OS_APPL_CODE) Logging_function(void);
+#define APP_Task_Logging_STOP_SEC_CODE
+
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Target specific structures
+ */
+/*
+ * Task Logging stack
+ */
+#define APP_Task_Logging_START_SEC_STACK
+#include "tpl_memmap.h"
+VAR(tpl_stack_word, OS_APPL_DATA) Logging_stack_zone[300/sizeof(tpl_stack_word)];
+#define APP_Task_Logging_STOP_SEC_STACK
+#include "tpl_memmap.h"
+
+#define Logging_STACK {Logging_stack_zone, 300}
+
+/*
+ * Task Logging context
+ */
+#define OS_START_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+VAR(arm_core_context, OS_VAR) Logging_int_context;
+
+#define Logging_CONTEXT &Logging_int_context
+
+#define OS_STOP_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+
+
+
+
+/*
+  No timing protection
+ */
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+/*
+ * Static descriptor of task Logging
+ */
+CONST(tpl_proc_static, OS_CONST) Logging_task_stat_desc = {
+  /* context                  */  Logging_CONTEXT,
+  /* stack                    */  Logging_STACK,
+  /* entry point (function)   */  Logging_function,
+  /* internal ressource       */  NULL,
+  /* task id                  */  Logging_id,
+#if WITH_OSAPPLICATION == YES
+  /* OS application id        */  
+#endif
+  /* task base priority       */  1,
+  /* max activation count     */  1,
+  /* task type                */  TASK_BASIC,
+#if WITH_AUTOSAR_TIMING_PROTECTION == YES
+
+  /* execution budget */        0,
+  /* timeframe        */        0, 
+  /* pointer to the timing
+     protection descriptor    */ NULL
+
+#endif
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+/*
+ * Dynamic descriptor of task Logging
+ */
+VAR(tpl_proc, OS_VAR) Logging_task_desc = {
+  /* resources                      */  NULL,
+#if WITH_OSAPPLICATION == YES
+  /* if > 0 the process is trusted  */  0,    
+#endif /* WITH_OSAPPLICATION */
+  /* activate count                 */  0,
+  /* task priority                  */  1,
+  /* task state                     */  SUSPENDED
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Task Diagnostics descriptor
+ */
+#define APP_Task_Diagnostics_START_SEC_CODE
+
+#include "tpl_memmap.h"
+/*
+ * Task Diagnostics function prototype
+ */
+
+FUNC(void, OS_APPL_CODE) Diagnostics_function(void);
+#define APP_Task_Diagnostics_STOP_SEC_CODE
+
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Target specific structures
+ */
+/*
+ * Task Diagnostics stack
+ */
+#define APP_Task_Diagnostics_START_SEC_STACK
+#include "tpl_memmap.h"
+VAR(tpl_stack_word, OS_APPL_DATA) Diagnostics_stack_zone[300/sizeof(tpl_stack_word)];
+#define APP_Task_Diagnostics_STOP_SEC_STACK
+#include "tpl_memmap.h"
+
+#define Diagnostics_STACK {Diagnostics_stack_zone, 300}
+
+/*
+ * Task Diagnostics context
+ */
+#define OS_START_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+VAR(arm_core_context, OS_VAR) Diagnostics_int_context;
+
+#define Diagnostics_CONTEXT &Diagnostics_int_context
+
+#define OS_STOP_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+
+
+
+
+/*
+  No timing protection
+ */
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+/*
+ * Static descriptor of task Diagnostics
+ */
+CONST(tpl_proc_static, OS_CONST) Diagnostics_task_stat_desc = {
+  /* context                  */  Diagnostics_CONTEXT,
+  /* stack                    */  Diagnostics_STACK,
+  /* entry point (function)   */  Diagnostics_function,
+  /* internal ressource       */  NULL,
+  /* task id                  */  Diagnostics_id,
+#if WITH_OSAPPLICATION == YES
+  /* OS application id        */  
+#endif
+  /* task base priority       */  2,
+  /* max activation count     */  1,
+  /* task type                */  TASK_BASIC,
+#if WITH_AUTOSAR_TIMING_PROTECTION == YES
+
+  /* execution budget */        0,
+  /* timeframe        */        0, 
+  /* pointer to the timing
+     protection descriptor    */ NULL
+
+#endif
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+/*
+ * Dynamic descriptor of task Diagnostics
+ */
+VAR(tpl_proc, OS_VAR) Diagnostics_task_desc = {
+  /* resources                      */  NULL,
+#if WITH_OSAPPLICATION == YES
+  /* if > 0 the process is trusted  */  0,    
+#endif /* WITH_OSAPPLICATION */
+  /* activate count                 */  0,
+  /* task priority                  */  2,
+  /* task state                     */  SUSPENDED
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
  * Task Display descriptor
  */
 #define APP_Task_Display_START_SEC_CODE
@@ -467,7 +695,7 @@ CONST(tpl_proc_static, OS_CONST) Display_task_stat_desc = {
 #if WITH_OSAPPLICATION == YES
   /* OS application id        */  
 #endif
-  /* task base priority       */  2,
+  /* task base priority       */  3,
   /* max activation count     */  1,
   /* task type                */  TASK_BASIC,
 #if WITH_AUTOSAR_TIMING_PROTECTION == YES
@@ -495,7 +723,106 @@ VAR(tpl_proc, OS_VAR) Display_task_desc = {
   /* if > 0 the process is trusted  */  0,    
 #endif /* WITH_OSAPPLICATION */
   /* activate count                 */  0,
-  /* task priority                  */  2,
+  /* task priority                  */  3,
+  /* task state                     */  SUSPENDED
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Task Processing descriptor
+ */
+#define APP_Task_Processing_START_SEC_CODE
+
+#include "tpl_memmap.h"
+/*
+ * Task Processing function prototype
+ */
+
+FUNC(void, OS_APPL_CODE) Processing_function(void);
+#define APP_Task_Processing_STOP_SEC_CODE
+
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Target specific structures
+ */
+/*
+ * Task Processing stack
+ */
+#define APP_Task_Processing_START_SEC_STACK
+#include "tpl_memmap.h"
+VAR(tpl_stack_word, OS_APPL_DATA) Processing_stack_zone[300/sizeof(tpl_stack_word)];
+#define APP_Task_Processing_STOP_SEC_STACK
+#include "tpl_memmap.h"
+
+#define Processing_STACK {Processing_stack_zone, 300}
+
+/*
+ * Task Processing context
+ */
+#define OS_START_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+VAR(arm_core_context, OS_VAR) Processing_int_context;
+
+#define Processing_CONTEXT &Processing_int_context
+
+#define OS_STOP_SEC_VAR_NOINIT_32BIT
+#include "tpl_memmap.h"
+
+
+
+
+/*
+  No timing protection
+ */
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+/*
+ * Static descriptor of task Processing
+ */
+CONST(tpl_proc_static, OS_CONST) Processing_task_stat_desc = {
+  /* context                  */  Processing_CONTEXT,
+  /* stack                    */  Processing_STACK,
+  /* entry point (function)   */  Processing_function,
+  /* internal ressource       */  NULL,
+  /* task id                  */  Processing_id,
+#if WITH_OSAPPLICATION == YES
+  /* OS application id        */  
+#endif
+  /* task base priority       */  4,
+  /* max activation count     */  1,
+  /* task type                */  TASK_BASIC,
+#if WITH_AUTOSAR_TIMING_PROTECTION == YES
+
+  /* execution budget */        0,
+  /* timeframe        */        0, 
+  /* pointer to the timing
+     protection descriptor    */ NULL
+
+#endif
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+/*
+ * Dynamic descriptor of task Processing
+ */
+VAR(tpl_proc, OS_VAR) Processing_task_desc = {
+  /* resources                      */  NULL,
+#if WITH_OSAPPLICATION == YES
+  /* if > 0 the process is trusted  */  0,    
+#endif /* WITH_OSAPPLICATION */
+  /* activate count                 */  0,
+  /* task priority                  */  4,
   /* task state                     */  SUSPENDED
 };
 
@@ -566,7 +893,7 @@ CONST(tpl_proc_static, OS_CONST) Acquisition_task_stat_desc = {
 #if WITH_OSAPPLICATION == YES
   /* OS application id        */  
 #endif
-  /* task base priority       */  3,
+  /* task base priority       */  5,
   /* max activation count     */  1,
   /* task type                */  TASK_BASIC,
 #if WITH_AUTOSAR_TIMING_PROTECTION == YES
@@ -594,7 +921,7 @@ VAR(tpl_proc, OS_VAR) Acquisition_task_desc = {
   /* if > 0 the process is trusted  */  0,    
 #endif /* WITH_OSAPPLICATION */
   /* activate count                 */  0,
-  /* task priority                  */  3,
+  /* task priority                  */  5,
   /* task state                     */  SUSPENDED
 };
 
@@ -627,7 +954,10 @@ FUNC(void, OS_CODE) SysTick_Handler(void)
 CONSTP2CONST(tpl_proc_static, AUTOMATIC, OS_APPL_DATA)
 tpl_stat_proc_table[TASK_COUNT+ISR_COUNT+1] = {
   &heartbeat_task_stat_desc,
+  &Logging_task_stat_desc,
+  &Diagnostics_task_stat_desc,
   &Display_task_stat_desc,
+  &Processing_task_stat_desc,
   &Acquisition_task_stat_desc,
   &IDLE_TASK_task_stat_desc
 };
@@ -635,7 +965,10 @@ tpl_stat_proc_table[TASK_COUNT+ISR_COUNT+1] = {
 CONSTP2VAR(tpl_proc, AUTOMATIC, OS_APPL_DATA)
 tpl_dyn_proc_table[TASK_COUNT+ISR_COUNT+1] = {
   &heartbeat_task_desc,
+  &Logging_task_desc,
+  &Diagnostics_task_desc,
   &Display_task_desc,
+  &Processing_task_desc,
   &Acquisition_task_desc,
   &IDLE_TASK_task_desc
 };
@@ -695,7 +1028,62 @@ VAR(tpl_time_obj, OS_VAR) al_acq_alarm_desc = {
     /* next alarm                   */  NULL,
     /* prev alarm                   */  NULL,
     /* cycle                        */  10,
-    /* date                         */  10,
+    /* date                         */  1,
+    /* State of the alarm           */  ALARM_AUTOSTART
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Alarm al_diag descriptor
+ *
+ * This alarm does the activation of task Diagnostics
+ */
+
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_task_activation_action, OS_CONST) al_diag_action = {
+  {
+    /* action function  */  tpl_action_activate_task
+  },
+  /* task id            */  Diagnostics_id
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+ 
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_alarm_static, OS_CONST) al_diag_static = {
+  {
+    /* pointer to counter           */  &SystemCounter_counter_desc,
+    /* pointer to the expiration    */  tpl_raise_alarm
+#if (WITH_ID == YES)
+    /* id of the alarm for tracing  */  , al_diag_id
+#endif
+#if WITH_OSAPPLICATION == YES
+    /* OS application id            */  , 
+#endif
+  },
+  /* action of the alarm  */  (tpl_action *)&al_diag_action
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+VAR(tpl_time_obj, OS_VAR) al_diag_alarm_desc = {
+    /* pointer to the static part   */  (tpl_time_obj_static *)&al_diag_static,
+    /* next alarm                   */  NULL,
+    /* prev alarm                   */  NULL,
+    /* cycle                        */  100,
+    /* date                         */  1,
     /* State of the alarm           */  ALARM_AUTOSTART
 };
 
@@ -750,7 +1138,7 @@ VAR(tpl_time_obj, OS_VAR) al_disp_alarm_desc = {
     /* next alarm                   */  NULL,
     /* prev alarm                   */  NULL,
     /* cycle                        */  50,
-    /* date                         */  50,
+    /* date                         */  1,
     /* State of the alarm           */  ALARM_AUTOSTART
 };
 
@@ -805,7 +1193,117 @@ VAR(tpl_time_obj, OS_VAR) al_hb_alarm_desc = {
     /* next alarm                   */  NULL,
     /* prev alarm                   */  NULL,
     /* cycle                        */  250,
-    /* date                         */  250,
+    /* date                         */  1,
+    /* State of the alarm           */  ALARM_AUTOSTART
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Alarm al_log descriptor
+ *
+ * This alarm does the activation of task Logging
+ */
+
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_task_activation_action, OS_CONST) al_log_action = {
+  {
+    /* action function  */  tpl_action_activate_task
+  },
+  /* task id            */  Logging_id
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+ 
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_alarm_static, OS_CONST) al_log_static = {
+  {
+    /* pointer to counter           */  &SystemCounter_counter_desc,
+    /* pointer to the expiration    */  tpl_raise_alarm
+#if (WITH_ID == YES)
+    /* id of the alarm for tracing  */  , al_log_id
+#endif
+#if WITH_OSAPPLICATION == YES
+    /* OS application id            */  , 
+#endif
+  },
+  /* action of the alarm  */  (tpl_action *)&al_log_action
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+VAR(tpl_time_obj, OS_VAR) al_log_alarm_desc = {
+    /* pointer to the static part   */  (tpl_time_obj_static *)&al_log_static,
+    /* next alarm                   */  NULL,
+    /* prev alarm                   */  NULL,
+    /* cycle                        */  1000,
+    /* date                         */  1,
+    /* State of the alarm           */  ALARM_AUTOSTART
+};
+
+#define OS_STOP_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+/*-----------------------------------------------------------------------------
+ * Alarm al_proc descriptor
+ *
+ * This alarm does the activation of task Processing
+ */
+
+
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_task_activation_action, OS_CONST) al_proc_action = {
+  {
+    /* action function  */  tpl_action_activate_task
+  },
+  /* task id            */  Processing_id
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+ 
+#define OS_START_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+CONST(tpl_alarm_static, OS_CONST) al_proc_static = {
+  {
+    /* pointer to counter           */  &SystemCounter_counter_desc,
+    /* pointer to the expiration    */  tpl_raise_alarm
+#if (WITH_ID == YES)
+    /* id of the alarm for tracing  */  , al_proc_id
+#endif
+#if WITH_OSAPPLICATION == YES
+    /* OS application id            */  , 
+#endif
+  },
+  /* action of the alarm  */  (tpl_action *)&al_proc_action
+};
+
+#define OS_STOP_SEC_CONST_UNSPECIFIED
+#include "tpl_memmap.h"
+
+#define OS_START_SEC_VAR_UNSPECIFIED
+#include "tpl_memmap.h"
+
+VAR(tpl_time_obj, OS_VAR) al_proc_alarm_desc = {
+    /* pointer to the static part   */  (tpl_time_obj_static *)&al_proc_static,
+    /* next alarm                   */  NULL,
+    /* prev alarm                   */  NULL,
+    /* cycle                        */  20,
+    /* date                         */  1,
     /* State of the alarm           */  ALARM_AUTOSTART
 };
 
@@ -818,8 +1316,11 @@ VAR(tpl_time_obj, OS_VAR) al_hb_alarm_desc = {
 CONSTP2VAR(tpl_time_obj, AUTOMATIC, OS_APPL_DATA)
   tpl_alarm_table[ALARM_COUNT] = {
   &al_acq_alarm_desc,
+  &al_diag_alarm_desc,
   &al_disp_alarm_desc,
-  &al_hb_alarm_desc
+  &al_hb_alarm_desc,
+  &al_log_alarm_desc,
+  &al_proc_alarm_desc
 };
 #define OS_STOP_SEC_CONST_UNSPECIFIED
 #include "tpl_memmap.h"
@@ -835,8 +1336,10 @@ CONSTP2VAR(tpl_time_obj, AUTOMATIC, OS_APPL_DATA)
 #define OS_START_SEC_VAR_UNSPECIFIED
 #include "tpl_memmap.h"
 
-VAR(tpl_heap_entry, OS_VAR) tpl_ready_list[5];
-VAR(tpl_rank_count, OS_VAR) tpl_tail_for_prio[5] = {
+VAR(tpl_heap_entry, OS_VAR) tpl_ready_list[8];
+VAR(tpl_rank_count, OS_VAR) tpl_tail_for_prio[7] = {
+  0,
+  0,
   0,
   0,
   0,
@@ -879,7 +1382,10 @@ VAR(tpl_kern_state, OS_VAR) tpl_kern =
 CONSTP2CONST(char, AUTOMATIC, OS_APPL_DATA) proc_name_table[TASK_COUNT + ISR_COUNT + 1] = {
 
   "heartbeat",
+  "Logging",
+  "Diagnostics",
   "Display",
+  "Processing",
   "Acquisition",
   "*idle*"
 };

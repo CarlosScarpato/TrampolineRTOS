@@ -376,11 +376,17 @@ FUNC(StatusType, OS_CODE) CancelAlarm(
  */
 DeclareApplicationMode(std);
 DeclareTask(Acquisition);
+DeclareTask(Diagnostics);
 DeclareTask(Display);
+DeclareTask(Logging);
+DeclareTask(Processing);
 DeclareTask(heartbeat);
 DeclareAlarm(al_acq);
+DeclareAlarm(al_diag);
 DeclareAlarm(al_disp);
 DeclareAlarm(al_hb);
+DeclareAlarm(al_log);
+DeclareAlarm(al_proc);
 
 #ifdef __cplusplus
 }
