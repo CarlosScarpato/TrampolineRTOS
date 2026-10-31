@@ -10,3 +10,8 @@ ledtest
 adctest
 ledtest
 adctest
+oledtest
+skeleton
+resource
+cantest
+canirq
