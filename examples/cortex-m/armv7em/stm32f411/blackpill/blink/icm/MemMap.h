@@ -3035,6 +3035,989 @@
 #endif
 
 /*-----------------------------------------------------------------------------
+ * Task Acquisition memory mapping to sections
+ *
+ * Code section
+ */
+#ifdef APP_Task_Acquisition_START_SEC_CODE
+  #undef APP_Task_Acquisition_START_SEC_CODE
+  #ifdef CURRENT_LINKER_CODE_SECTION
+    #error "Starting a new Acquisition Task code section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_CODE_SECTION_NAME
+    #define CURRENT_LINKER_CODE_SECTION_NAME __attribute__ ((section (".Task_AcquisitionCode")))
+    #define CURRENT_LINKER_CODE_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CODE
+  #undef APP_Task_Acquisition_STOP_SEC_CODE
+  #ifdef CURRENT_LINKER_CODE_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_CODE_SECTION
+    #undef CURRENT_LINKER_CODE_SECTION_NAME
+    #define CURRENT_LINKER_CODE_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+/*
+ * Stack section
+ */
+#ifdef APP_Task_Acquisition_START_SEC_STACK
+  #undef APP_Task_Acquisition_START_SEC_STACK
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Acquisition Task stack section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_AcquisitionStack")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_STACK
+  #undef APP_Task_Acquisition_STOP_SEC_STACK
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+/*
+ * Variables sections
+ */
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_NOINIT_32BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_NOINIT_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_NOINIT_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_NOINIT_16BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_NOINIT_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_NOINIT_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_NOINIT_8BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_NOINIT_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_NOINIT_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_NOINIT_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_VAR_NOINIT_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_NOINIT_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_NOINIT_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_VAR_NOINIT_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_NOINIT_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_NOINIT_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_32BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_POWER_ON_INIT_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_16BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_POWER_ON_INIT_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_8BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_POWER_ON_INIT_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_POWER_ON_INIT_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_VAR_POWER_ON_INIT_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_POWER_ON_INIT_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_POWER_ON_INIT_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_FAST_32BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_FAST_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_FAST_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_FAST_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_FAST_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_FAST_16BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_FAST_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_FAST_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_FAST_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_FAST_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_FAST_8BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_FAST_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_FAST_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_FAST_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_FAST_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_FAST_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_VAR_FAST_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_FAST_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_FAST_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_FAST_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_FAST_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_VAR_FAST_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_FAST_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_FAST_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_FAST_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_32BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_16BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_8BIT
+  #undef APP_Task_Acquisition_START_SEC_VAR_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_VAR_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_VAR_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_VAR_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_VAR_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_VAR_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_VAR_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+
+/*
+ * Const, Calibration, Carto, Configuration data sections
+ */
+
+#ifdef APP_Task_Acquisition_START_SEC_CONST_32BIT
+  #undef APP_Task_Acquisition_START_SEC_CONST_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONST_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONST_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONST_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONST_16BIT
+  #undef APP_Task_Acquisition_START_SEC_CONST_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONST_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONST_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONST_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONST_8BIT
+  #undef APP_Task_Acquisition_START_SEC_CONST_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONST_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONST_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONST_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONST_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_CONST_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONST_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONST_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_CONST_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONST_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_CONST_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONST_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONST_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_CONST_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CALIB_32BIT
+  #undef APP_Task_Acquisition_START_SEC_CALIB_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CALIB_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CALIB_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CALIB_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CALIB_16BIT
+  #undef APP_Task_Acquisition_START_SEC_CALIB_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CALIB_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CALIB_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CALIB_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CALIB_8BIT
+  #undef APP_Task_Acquisition_START_SEC_CALIB_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CALIB_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CALIB_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CALIB_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CALIB_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_CALIB_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CALIB_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CALIB_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_CALIB_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CALIB_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_CALIB_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CALIB_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CALIB_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_CALIB_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CARTO_32BIT
+  #undef APP_Task_Acquisition_START_SEC_CARTO_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CARTO_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CARTO_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CARTO_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CARTO_16BIT
+  #undef APP_Task_Acquisition_START_SEC_CARTO_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CARTO_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CARTO_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CARTO_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CARTO_8BIT
+  #undef APP_Task_Acquisition_START_SEC_CARTO_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CARTO_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CARTO_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CARTO_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CARTO_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_CARTO_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CARTO_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CARTO_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_CARTO_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CARTO_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_CARTO_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CARTO_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CARTO_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_CARTO_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONFIG_DATA_32BIT
+  #undef APP_Task_Acquisition_START_SEC_CONFIG_DATA_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONFIG_DATA_32BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_32BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_32BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONFIG_DATA_16BIT
+  #undef APP_Task_Acquisition_START_SEC_CONFIG_DATA_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONFIG_DATA_16BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_16BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_16BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONFIG_DATA_8BIT
+  #undef APP_Task_Acquisition_START_SEC_CONFIG_DATA_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONFIG_DATA_8BIT")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_8BIT
+  #undef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_8BIT
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONFIG_DATA_BOOLEAN
+  #undef APP_Task_Acquisition_START_SEC_CONFIG_DATA_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONFIG_DATA_BOOLEAN")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_BOOLEAN
+  #undef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_BOOLEAN
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+#ifdef APP_Task_Acquisition_START_SEC_CONFIG_DATA_UNSPECIFIED
+  #undef APP_Task_Acquisition_START_SEC_CONFIG_DATA_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #error "Starting a new Task Acquisition data section while a section is already started"
+  #else
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME __attribute__ ((section (".Task_Acquisition_SEC_CONFIG_DATA_UNSPECIFIED")))
+    #define CURRENT_LINKER_DATA_SECTION
+  #endif
+#endif
+#ifdef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_UNSPECIFIED
+  #undef APP_Task_Acquisition_STOP_SEC_CONFIG_DATA_UNSPECIFIED
+  #ifdef CURRENT_LINKER_DATA_SECTION
+    #undef MEMMAP_ERROR
+    #undef CURRENT_LINKER_DATA_SECTION
+    #undef CURRENT_LINKER_DATA_SECTION_NAME
+    #define CURRENT_LINKER_DATA_SECTION_NAME
+  #else
+    #error "No section started"
+  #endif
+#endif
+
+/*-----------------------------------------------------------------------------
  * Task Task_CAN_RX memory mapping to sections
  *
  * Code section

@@ -21,7 +21,9 @@ typedef struct
 volatile ICM_Data_t ICM_Data = {0, 0, 0, 0, 0};
 volatile uint32_t rx_count = 0;
 volatile uint32_t can_alive =  0; /* incrementa a cada frame; Display zera e checa */
-volatile uint32_t no_frame_cnt = 0;
+volatile uint32_t no_frame_cnt = 0; /* no topo, troca as globais: */
+volatile uint8_t turn_mode = 0;   /* 0=off 1=left 2=right 3=hazard */
+volatile uint8_t hazard_latch = 0;   /* lembra que o hazard estava ligado */
 
 static void delay_us(uint32_t us)
 {
@@ -31,6 +33,46 @@ static void delay_us(uint32_t us)
     __asm volatile("nop");
   }
 }
+
+
+/* ======== Teclado ======== */
+
+static void adc_init(void)
+{
+  volatile uint32_t d;
+  RCC->AHB1ENR |= (1U<<0);        /* GPIOA */
+  RCC->APB2ENR |= (1U<<8);        /* ADC1  */
+  d = RCC->AHB1ENR; (void)d;
+  GPIOA->MODER |= (3U<<(1U*2U));  /* PA1 analogico */
+  ADC->CCR &= ~(3U<<16); ADC->CCR |= (1U<<16);   /* /4 */
+  ADC1->CR1 &= ~(3U<<24);                         /* 12 bits */
+  ADC1->CR2 &= ~(1U<<1);                          /* conversao unica */
+  ADC1->SMPR2 &= ~(7U<<3); ADC1->SMPR2 |= (7U<<3);/* sample time max */
+  ADC1->SQR1 &= ~(0xFU<<20);
+  ADC1->SQR3 &= ~(0x1FU); ADC1->SQR3 |= 1U;       /* canal 1 */
+  ADC1->CR2 |= (1U<<0);                            /* ADON */
+  { volatile uint32_t i; for(i=0;i<10000U;i++){} }
+}
+static uint16_t adc_read(void)
+{
+  uint32_t g=100000U;
+  ADC1->CR2 |= (1U<<30);
+  while(((ADC1->SR&(1U<<1))==0U)&&g)g--;
+  return (uint16_t)(ADC1->DR & 0x0FFF);
+}
+/* classifica o botao pela tensao (faixas calibradas) */
+static uint8_t read_button(void)
+{
+  uint16_t v = adc_read();
+  if (v > 3600U) return 0;        /* nenhum */
+  if (v > 2590U) return 5;        /* SW5 */
+  if (v > 1600U) return 4;        /* SW4 seta dir */
+  if (v > 900U)  return 3;        /* SW3 */
+  if (v > 290U)  return 2;        /* SW2 pisca-alerta */
+  return 1;                       /* SW1 seta esq */
+}
+
+
 
 /* ======== LEDs ======== */
 
@@ -407,6 +449,7 @@ FUNC(int, OS_APPL_CODE) main(void)
   sh1106_init();
   sh1106_clear();
   leds_init();
+  adc_init();
   otext(0, 0, "TRMPOLINE CLUSTER");
   StartOS(OSDEFAULTAPPMODE);
   return 0;
@@ -487,10 +530,74 @@ TASK(Display)
     }
   }
 
+    /* --- setas piscando a ~1.5Hz (toggle a cada ~330ms = 7 ciclos de 50ms) --- */
+  {
+    static uint8_t blink_cnt = 0;
+    static uint8_t blink_on = 0;
+    uint8_t left_on, right_on;
+    blink_cnt++;
+    if (blink_cnt >= 7U) { blink_cnt = 0; blink_on = !blink_on; }
+
+    left_on  = ((turn_mode == 1U) || (turn_mode == 3U)) && blink_on;
+    right_on = ((turn_mode == 2U) || (turn_mode == 3U)) && blink_on;
+
+    if (left_on)  GPIOA->BSRRL = (1U << 10); else GPIOA->BSRRH = (1U << 10);
+    if (right_on) GPIOB->BSRRL = (1U << 0);  else GPIOB->BSRRH = (1U << 0);
+  }
+
+
   TerminateTask();
 }
 #define APP_Task_Display_STOP_SEC_CODE
 #include "tpl_memmap.h"
+
+
+#define APP_Task_Acquisition_START_SEC_CODE
+#include "tpl_memmap.h"
+TASK(Acquisition)
+{
+  static uint8_t last_raw = 0;    /* leitura do ciclo anterior */
+  static uint8_t debounce = 0;    /* contador de estabilidade */
+  static uint8_t confirmed = 0;   /* botao confirmado atual */
+
+  uint8_t b = read_button();
+
+  /* debounce: conta quantos ciclos o mesmo valor se repete */
+  if (b == last_raw) {
+    if (debounce < 255U) debounce++;
+  } else {
+    debounce = 0;
+  }
+  last_raw = b;
+
+  /* apos 3 ciclos estaveis (30ms), aceita como novo estado confirmado */
+  if (debounce == 3U) {
+    if ((confirmed == 0U) && (b != 0U)) {
+      if (b == 2U) {
+        /* SW2: liga/desliga hazard */
+        if (turn_mode == 3U) { turn_mode = 0U; hazard_latch = 0U; }
+        else { turn_mode = 3U; hazard_latch = 1U; }
+      }
+      if (b == 1U) {
+        /* SW1 esquerda: se ligar/desligar, volta ao hazard se ele estava latente */
+        if (turn_mode == 1U) { turn_mode = hazard_latch ? 3U : 0U; }
+        else { turn_mode = 1U; }
+      }
+      if (b == 4U) {
+        /* SW4 direita */
+        if (turn_mode == 2U) { turn_mode = hazard_latch ? 3U : 0U; }
+        else { turn_mode = 2U; }
+      }
+    }
+    confirmed = b;
+  }
+  TerminateTask();
+}
+#define APP_Task_Acquisition_STOP_SEC_CODE
+#include "tpl_memmap.h"
+
+
+
 
 #define APP_Task_heartbeat_START_SEC_CODE
 #include "tpl_memmap.h"

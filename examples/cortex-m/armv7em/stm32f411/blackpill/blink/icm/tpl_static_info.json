@@ -7,6 +7,28 @@
       "ACTION" : "ACTIVATETASK",
       "ACTION_S" : 
       {
+        "TASK" : "Acquisition"
+      },
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "ALARMTIME" : 10,
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "std"
+          }
+        ],
+        "CYCLETIME" : 10
+      },
+      "COUNTER" : "SystemCounter",
+      "NAME" : "al_acq"
+    },    
+    {
+      "ACTION" : "ACTIVATETASK",
+      "ACTION_S" : 
+      {
         "TASK" : "Display"
       },
       "AUTOSTART" : "true",
@@ -80,7 +102,7 @@
       "ISRUSAGE" : [],
       "KIND" : "Resource",
       "NAME" : "ICM_Resource",
-      "PRIORITY" : 4,
+      "PRIORITY" : 5,
       "RESOURCEPROPERTY" : "STANDARD",
       "TASKUSAGE" : 
       [
@@ -129,12 +151,24 @@
       "USEINTERNALRESOURCE" : "false"
     },    
     {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "false",
+      "KIND" : "Task",
+      "NAME" : "Acquisition",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 3,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 400,
+      "USEFLOAT" : "false",
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
       "ACTIVATION" : 4,
       "AUTOSTART" : "false",
       "KIND" : "Task",
       "NAME" : "Task_CAN_RX",
       "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 3,
+      "PRIORITY" : 4,
       "RESOURCE" : 
       [
         

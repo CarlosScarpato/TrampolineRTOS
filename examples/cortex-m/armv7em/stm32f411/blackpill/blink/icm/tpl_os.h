@@ -375,10 +375,12 @@ FUNC(StatusType, OS_CODE) CancelAlarm(
  * Objects declared in the OIL/ARXML file
  */
 DeclareApplicationMode(std);
+DeclareTask(Acquisition);
 DeclareTask(Display);
 DeclareTask(Task_CAN_RX);
 DeclareTask(heartbeat);
 DeclareResource(ICM_Resource);
+DeclareAlarm(al_acq);
 DeclareAlarm(al_disp);
 DeclareAlarm(al_hb);
 
