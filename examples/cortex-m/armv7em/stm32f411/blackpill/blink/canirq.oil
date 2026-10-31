@@ -36,19 +36,15 @@ CPU canirq {
 
   APPMODE std {};
 
-  EVENT EV_CAN_RX { MASK = AUTO; };
-
   TASK Task_CAN_RX {
-    PRIORITY = 6; AUTOSTART = TRUE { APPMODE = std; };
-    ACTIVATION = 1; SCHEDULE = FULL;
-    EVENT = EV_CAN_RX;
+    PRIORITY = 6; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL;
   };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
   ISR ISR_CAN {
     CATEGORY = 2;
     PRIORITY = 1;
-    SOURCE = EXTI1_IRQ;
+    SOURCE = EXTI1_IRQ { PIN = PB1 { TRIGGER = FALLING; PULL = UP; }; };
   };
 
   ALARM al_hb { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = heartbeat; };
