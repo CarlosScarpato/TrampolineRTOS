@@ -34,6 +34,18 @@ static void delay_us(uint32_t us)
   }
 }
 
+/* ======== Buzzer ======== */
+
+static void buzzer_init(void)
+{
+  volatile uint32_t d;
+  RCC->AHB1ENR |= (1U << 1);          /* GPIOB */
+  d = RCC->AHB1ENR; (void)d;
+  GPIOB->MODER &= ~(3U << (10U*2U));
+  GPIOB->MODER |=  (1U << (10U*2U));  /* PB10 saida */
+  GPIOB->BSRRH = (1U << 10);          /* buzzer off */
+}
+
 
 /* ======== Teclado ======== */
 
@@ -71,7 +83,6 @@ static uint8_t read_button(void)
   if (v > 290U)  return 2;        /* SW2 pisca-alerta */
   return 1;                       /* SW1 seta esq */
 }
-
 
 
 /* ======== LEDs ======== */
@@ -450,6 +461,7 @@ FUNC(int, OS_APPL_CODE) main(void)
   sh1106_clear();
   leds_init();
   adc_init();
+  buzzer_init();
   otext(0, 0, "TRMPOLINE CLUSTER");
   StartOS(OSDEFAULTAPPMODE);
   return 0;
@@ -534,7 +546,7 @@ TASK(Display)
   {
     static uint8_t blink_cnt = 0;
     static uint8_t blink_on = 0;
-    uint8_t left_on, right_on;
+    uint8_t left_on, right_on, any_blink;
     blink_cnt++;
     if (blink_cnt >= 7U) { blink_cnt = 0; blink_on = !blink_on; }
 
@@ -543,6 +555,10 @@ TASK(Display)
 
     if (left_on)  GPIOA->BSRRL = (1U << 10); else GPIOA->BSRRH = (1U << 10);
     if (right_on) GPIOB->BSRRL = (1U << 0);  else GPIOB->BSRRH = (1U << 0);
+
+    /* tic-tac: buzzer soa junto com o LED aceso (se alguma seta ativa) */
+    any_blink = ((turn_mode != 0U) && blink_on);
+    if (any_blink) GPIOB->BSRRL = (1U << 10); else GPIOB->BSRRH = (1U << 10);
   }
 
 
