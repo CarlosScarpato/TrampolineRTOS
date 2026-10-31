@@ -8,8 +8,6 @@ build.py
 CMakeLists.txt
 ledtest
 adctest
-ledtest
-adctest
 oledtest
 skeleton
 resource
