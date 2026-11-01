@@ -29,6 +29,28 @@
       "ACTION" : "ACTIVATETASK",
       "ACTION_S" : 
       {
+        "TASK" : "Diagnostics"
+      },
+      "AUTOSTART" : "true",
+      "AUTOSTART_S" : 
+      {
+        "ALARMTIME" : 100,
+        "APPMODE" : 
+        [
+          
+          {
+            "VALUE" : "std"
+          }
+        ],
+        "CYCLETIME" : 100
+      },
+      "COUNTER" : "SystemCounter",
+      "NAME" : "al_diag"
+    },    
+    {
+      "ACTION" : "ACTIVATETASK",
+      "ACTION_S" : 
+      {
         "TASK" : "Display"
       },
       "AUTOSTART" : "true",
@@ -102,7 +124,7 @@
       "ISRUSAGE" : [],
       "KIND" : "Resource",
       "NAME" : "ICM_Resource",
-      "PRIORITY" : 5,
+      "PRIORITY" : 6,
       "RESOURCEPROPERTY" : "STANDARD",
       "TASKUSAGE" : 
       [
@@ -135,9 +157,21 @@
       "ACTIVATION" : 1,
       "AUTOSTART" : "false",
       "KIND" : "Task",
-      "NAME" : "Display",
+      "NAME" : "Diagnostics",
       "NONPREEMPTABLE" : "false",
       "PRIORITY" : 2,
+      "SCHEDULE" : "FULL",
+      "STACKSIZE" : 400,
+      "USEFLOAT" : "false",
+      "USEINTERNALRESOURCE" : "false"
+    },    
+    {
+      "ACTIVATION" : 1,
+      "AUTOSTART" : "false",
+      "KIND" : "Task",
+      "NAME" : "Display",
+      "NONPREEMPTABLE" : "false",
+      "PRIORITY" : 3,
       "RESOURCE" : 
       [
         
@@ -156,7 +190,7 @@
       "KIND" : "Task",
       "NAME" : "Acquisition",
       "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 3,
+      "PRIORITY" : 4,
       "SCHEDULE" : "FULL",
       "STACKSIZE" : 400,
       "USEFLOAT" : "false",
@@ -168,7 +202,7 @@
       "KIND" : "Task",
       "NAME" : "Task_CAN_RX",
       "NONPREEMPTABLE" : "false",
-      "PRIORITY" : 4,
+      "PRIORITY" : 5,
       "RESOURCE" : 
       [
         

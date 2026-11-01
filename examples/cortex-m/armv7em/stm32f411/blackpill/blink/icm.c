@@ -20,10 +20,18 @@ typedef struct
 
 volatile ICM_Data_t ICM_Data = {0, 0, 0, 0, 0};
 volatile uint32_t rx_count = 0;
-volatile uint32_t can_alive =  0; /* incrementa a cada frame; Display zera e checa */
-volatile uint32_t no_frame_cnt = 0; /* no topo, troca as globais: */
-volatile uint8_t turn_mode = 0;   /* 0=off 1=left 2=right 3=hazard */
-volatile uint8_t hazard_latch = 0;   /* lembra que o hazard estava ligado */
+/* incrementa a cada frame; Display zera e checa */
+volatile uint32_t can_alive =  0; 
+/* no topo, troca as globais: */
+volatile uint32_t no_frame_cnt = 0;
+/* 0=off 1=left 2=right 3=hazard */ 
+volatile uint8_t turn_mode = 0;
+/* lembra que o hazard estava ligado */   
+volatile uint8_t hazard_latch = 0;   
+/* timeout por mensagem: idade desde o ultimo frame de cada ID (em ciclos de 100ms) */
+volatile uint16_t age_m1 = 9999, age_m2 = 9999, age_m3 = 9999, age_m4 = 9999;
+/* flags de validade (0 = timeout/invalido) */
+volatile uint8_t valid_m1 = 0, valid_m2 = 0, valid_m3 = 0, valid_m4 = 0;
 
 static void delay_us(uint32_t us)
 {
@@ -414,16 +422,20 @@ static void decode(uint16_t id, const uint8_t *d)
   {
   case 0x100:
     ICM_Data.rpm = (uint16_t)(d[0] | (d[1] << 8));
-    break; /* EngineSpeed */
+    age_m1 = 0;
+    break;
   case 0x200:
     ICM_Data.speed_x100 = (uint16_t)(d[0] | (d[1] << 8));
-    break; /* VehicleSpeed*100 */
+    age_m2 = 0;
+    break;
   case 0x300:
     ICM_Data.fuel_x2 = d[0];
     ICM_Data.temp = (int16_t)d[1] - 40;
+    age_m3 = 0;
     break;
   case 0x400:
     ICM_Data.warn = d[0];
+    age_m4 = 0;
     break;
   default:
     break;
@@ -485,24 +497,23 @@ TASK(Display)
   ReleaseResource(ICM_Resource);
 
   otext(2, 0, "RPM:");
-  u2s(snap.rpm, buf);
-  otext(2, 48, buf); /* era 42, empurra p/ 48 */
+  if (valid_m1) { u2s(snap.rpm, buf); otext(2, 48, buf); }
+  else          { otext(2, 48, "---  "); }
 
   otext(3, 0, "VEL:");
-  u2s((uint16_t)(snap.speed_x100 / 100U), buf);
-  otext(3, 48, buf);
+  if (valid_m2) { u2s((uint16_t)(snap.speed_x100 / 100U), buf); otext(3, 48, buf); }
+  else          { otext(3, 48, "---  "); }
 
   otext(4, 0, "FUEL:");
-  u2s((uint16_t)(snap.fuel_x2 / 2U), buf);
-  otext(4, 48, buf);
+  if (valid_m3) { u2s((uint16_t)(snap.fuel_x2 / 2U), buf); otext(4, 48, buf); }
+  else          { otext(4, 48, "---  "); }
 
   otext(5, 0, "TMP:");
-  {
+  if (valid_m3) {
     int16_t t = snap.temp;
     uint16_t tu = (t < 0) ? (uint16_t)(-t) : (uint16_t)t;
-    u2s(tu, buf);
-    otext(5, 48, buf);
-  }
+    u2s(tu, buf); otext(5, 48, buf);
+  } else { otext(5, 48, "---  "); }
 
   /* --- LEDs de warning --- */
   {
@@ -511,7 +522,7 @@ TASK(Display)
     int16_t temp = snap.temp;
 
     /* warning amarelo (PB4): temp alta ou combustivel baixo */
-    if ((temp > 110) || (fuel < 10U))
+    if ((temp > 110) || (fuel < 10U) || (!valid_m1) || (!valid_m2) || (!valid_m3) || (!valid_m4))
     {
       GPIOB->BSRRL = (1U << 4); /* acende */
     }
@@ -612,9 +623,6 @@ TASK(Acquisition)
 #define APP_Task_Acquisition_STOP_SEC_CODE
 #include "tpl_memmap.h"
 
-
-
-
 #define APP_Task_heartbeat_START_SEC_CODE
 #include "tpl_memmap.h"
 TASK(heartbeat)
@@ -641,4 +649,25 @@ FUNC(void, OS_CODE) assert_failed(uint8_t *file, uint32_t line)
 {
 }
 #define OS_STOP_SEC_CODE
+#include "tpl_memmap.h"
+
+#define APP_Task_Diagnostics_START_SEC_CODE
+#include "tpl_memmap.h"
+TASK(Diagnostics)
+{
+  /* envelhece (cada ciclo = 100ms); timeout = 3x periodo */
+  if (age_m1 < 9999U) age_m1++;
+  if (age_m2 < 9999U) age_m2++;
+  if (age_m3 < 9999U) age_m3++;
+  if (age_m4 < 9999U) age_m4++;
+
+  /* M1 periodo 500ms -> timeout 1500ms = 15 ciclos; M2/M3/M4 1000ms -> 30 ciclos */
+  valid_m1 = (age_m1 <= 15U) ? 1U : 0U;
+  valid_m2 = (age_m2 <= 30U) ? 1U : 0U;
+  valid_m3 = (age_m3 <= 30U) ? 1U : 0U;
+  valid_m4 = (age_m4 <= 30U) ? 1U : 0U;
+
+  TerminateTask();
+}
+#define APP_Task_Diagnostics_STOP_SEC_CODE
 #include "tpl_memmap.h"

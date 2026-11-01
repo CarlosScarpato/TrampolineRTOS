@@ -23,19 +23,19 @@
 #include "tpl_memmap.h"
 
 /*=============================================================================
- * To disable the priority 7 interrupts, the corresponding ICER
+ * To disable the priority 8 interrupts, the corresponding ICER
  * are set
  */
-FUNC(void, OS_CODE) tpl_disable_priority_7_interrupts(void)
+FUNC(void, OS_CODE) tpl_disable_priority_8_interrupts(void)
 {
   NVIC->ICER[0] = 0x80;
 }
 
 /*=============================================================================
- * To enable the priority 7 interrupts, the corresponding ISER
+ * To enable the priority 8 interrupts, the corresponding ISER
  * are set
  */
-FUNC(void, OS_CODE) tpl_enable_priority_7_interrupts(void)
+FUNC(void, OS_CODE) tpl_enable_priority_8_interrupts(void)
 {
   NVIC->ISER[0] = 0x80;
 }
@@ -51,11 +51,11 @@ FUNC(void, OS_CODE) tpl_enable_priority_7_interrupts(void)
 #include "tpl_memmap.h"
 
 CONST(tpl_enable_disable_func, OS_CONST) tpl_enable_table[1] = {
-  tpl_enable_priority_7_interrupts
+  tpl_enable_priority_8_interrupts
 };
 
 CONST(tpl_enable_disable_func, OS_CONST) tpl_disable_table[1] = {
-  tpl_disable_priority_7_interrupts
+  tpl_disable_priority_8_interrupts
 };
 
 #define OS_STOP_SEC_CONST_UNSPECIFIED

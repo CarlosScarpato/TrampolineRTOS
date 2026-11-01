@@ -44,6 +44,7 @@ CPU icm {
                      RESOURCE = ICM_Resource; };
   TASK heartbeat   { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
   TASK Acquisition { PRIORITY = 5; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
+  TASK Diagnostics { PRIORITY = 2; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
   ISR ISR_CAN { CATEGORY = 2; PRIORITY = 1;
                 SOURCE = EXTI1_IRQ { PIN = PB1 { TRIGGER = FALLING; PULL = UP; }; }; };
@@ -54,4 +55,6 @@ CPU icm {
                   AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; }; };
   ALARM al_acq { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = Acquisition; };
                  AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 10; CYCLETIME = 10; }; };
+  ALARM al_diag { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = Diagnostics; };
+                  AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 100; CYCLETIME = 100; }; };
 };
