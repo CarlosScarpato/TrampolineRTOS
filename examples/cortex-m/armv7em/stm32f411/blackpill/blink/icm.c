@@ -32,6 +32,10 @@ volatile uint8_t hazard_latch = 0;
 volatile uint16_t age_m1 = 9999, age_m2 = 9999, age_m3 = 9999, age_m4 = 9999;
 /* flags de validade (0 = timeout/invalido) */
 volatile uint8_t valid_m1 = 0, valid_m2 = 0, valid_m3 = 0, valid_m4 = 0;
+/* frames descartados por fora de faixa */
+volatile uint32_t range_drops = 0;    
+/* 1 = ultimo valor estava fora de faixa */
+volatile uint8_t range_err = 0;       
 
 static void delay_us(uint32_t us)
 {
@@ -73,6 +77,7 @@ static void adc_init(void)
   ADC1->CR2 |= (1U<<0);                            /* ADON */
   { volatile uint32_t i; for(i=0;i<10000U;i++){} }
 }
+
 static uint16_t adc_read(void)
 {
   uint32_t g=100000U;
@@ -80,6 +85,7 @@ static uint16_t adc_read(void)
   while(((ADC1->SR&(1U<<1))==0U)&&g)g--;
   return (uint16_t)(ADC1->DR & 0x0FFF);
 }
+
 /* classifica o botao pela tensao (faixas calibradas) */
 static uint8_t read_button(void)
 {
@@ -142,6 +148,7 @@ static void spi1_init(void)
   SPI1->CR1 |= (1U << 2) | (5U << 3) | (1U << 9) | (1U << 8);
   SPI1->CR1 |= (1U << 6);
 }
+
 static uint8_t spi_xfer(uint8_t x)
 {
   while ((SPI1->SR & (1U << 1)) == 0U)
@@ -153,14 +160,17 @@ static uint8_t spi_xfer(uint8_t x)
   }
   return *((volatile uint8_t *)&SPI1->DR);
 }
+
 static void csl(void)
 {
   GPIOA->BSRRH = (1U << 4);
 }
+
 static void csh(void)
 {
   GPIOA->BSRRL = (1U << 4);
 }
+
 static uint8_t mcp_read(uint8_t a)
 {
   uint8_t v;
@@ -171,6 +181,7 @@ static uint8_t mcp_read(uint8_t a)
   csh();
   return v;
 }
+
 static void mcp_write(uint8_t a, uint8_t v)
 {
   csl();
@@ -179,6 +190,7 @@ static void mcp_write(uint8_t a, uint8_t v)
   (void)spi_xfer(v);
   csh();
 }
+
 static void mcp_bitmod(uint8_t a, uint8_t m, uint8_t v)
 {
   csl();
@@ -188,6 +200,7 @@ static void mcp_bitmod(uint8_t a, uint8_t m, uint8_t v)
   (void)spi_xfer(v);
   csh();
 }
+
 static void mcp_init(void)
 {
   csl();
@@ -228,6 +241,7 @@ static void i2c1_init(void)
   I2C1->TRISE = 43U;
   I2C1->CR1 |= (1U << 0);
 }
+
 static uint8_t i2c_wr(uint8_t ctrl, const uint8_t *b, uint16_t n)
 {
   uint32_t g;
@@ -272,11 +286,13 @@ static uint8_t i2c_wr(uint8_t ctrl, const uint8_t *b, uint16_t n)
   I2C1->CR1 |= (1U << 9);
   return 1U;
 }
+
 static void ocmd(uint8_t c)
 {
   uint8_t b = c;
   (void)i2c_wr(0x00, &b, 1U);
 }
+
 static void sh1106_init(void)
 {
   ocmd(0xAE);
@@ -302,6 +318,7 @@ static void sh1106_init(void)
   ocmd(0xA6);
   ocmd(0xAF);
 }
+
 static void sh1106_clear(void)
 {
   uint8_t p, i, line[128];
@@ -358,6 +375,7 @@ static const uint8_t FONT[][5] = {{0, 0, 0, 0, 0},
                                   {0x08, 0x08, 0x08, 0x08, 0x08},
                                   {0, 0x60, 0x60, 0, 0},
                                   {0x62, 0x64, 0x08, 0x13, 0x23}};
+
 static uint8_t fidx(char c)
 {
   if (c == ' ')
@@ -376,6 +394,7 @@ static uint8_t fidx(char c)
     return 40;
   return 0;
 }
+
 static void otext(uint8_t page, uint8_t col, const char *s)
 {
   ocmd(0xB0 + page);
@@ -391,6 +410,7 @@ static void otext(uint8_t page, uint8_t col, const char *s)
     s++;
   }
 }
+
 /* converte para string com largura fixa (preenche espacos a direita) */
 static void u2s(uint16_t v, char *out)
 {
@@ -420,20 +440,32 @@ static void decode(uint16_t id, const uint8_t *d)
 {
   switch (id)
   {
-  case 0x100:
-    ICM_Data.rpm = (uint16_t)(d[0] | (d[1] << 8));
-    age_m1 = 0;
+  case 0x100: /* EngineSpeed: 0-8000 rpm */
+    {
+      uint16_t v = (uint16_t)(d[0] | (d[1] << 8));
+      if (v <= 8000U) { ICM_Data.rpm = v; age_m1 = 0; range_err = 0; }
+      else { range_drops++; range_err = 1; }  /* fora de faixa: descarta */
+    }
     break;
-  case 0x200:
-    ICM_Data.speed_x100 = (uint16_t)(d[0] | (d[1] << 8));
-    age_m2 = 0;
+  case 0x200: /* VehicleSpeed: 0-250 km/h (valor*100) -> 0-25000 */
+    {
+      uint16_t v = (uint16_t)(d[0] | (d[1] << 8));
+      if (v <= 25000U) { ICM_Data.speed_x100 = v; age_m2 = 0; range_err = 0; }
+      else { range_drops++; range_err = 1; }
+    }
     break;
-  case 0x300:
-    ICM_Data.fuel_x2 = d[0];
-    ICM_Data.temp = (int16_t)d[1] - 40;
-    age_m3 = 0;
+  case 0x300: /* FuelLevel 0-100% (valor*2 -> 0-200); CoolantTemp -40..150 */
+    {
+      uint8_t  f = d[0];
+      int16_t  t = (int16_t)d[1] - 40;
+      uint8_t ok = 1U;
+      if (f > 200U) ok = 0U;                 /* fuel fora */
+      if ((t < -40) || (t > 150)) ok = 0U;   /* temp fora */
+      if (ok) { ICM_Data.fuel_x2 = f; ICM_Data.temp = t; age_m3 = 0; range_err = 0; }
+      else { range_drops++; range_err = 1; }
+    }
     break;
-  case 0x400:
+  case 0x400: /* WarningFlags: bitfield, sem range */
     ICM_Data.warn = d[0];
     age_m4 = 0;
     break;
@@ -441,6 +473,7 @@ static void decode(uint16_t id, const uint8_t *d)
     break;
   }
 }
+
 static void read_rx0(void)
 {
   uint8_t sidh, sidl, i, dlc, data[8];
@@ -478,6 +511,7 @@ FUNC(int, OS_APPL_CODE) main(void)
   StartOS(OSDEFAULTAPPMODE);
   return 0;
 }
+
 TASK(Task_CAN_RX)
 {
   read_rx0();
@@ -522,7 +556,7 @@ TASK(Display)
     int16_t temp = snap.temp;
 
     /* warning amarelo (PB4): temp alta ou combustivel baixo */
-    if ((temp > 110) || (fuel < 10U) || (!valid_m1) || (!valid_m2) || (!valid_m3) || (!valid_m4))
+    if ((temp > 110) || (fuel < 10U) || (!valid_m1) || (!valid_m2) || (!valid_m3) || (!valid_m4) || range_err)
     {
       GPIOB->BSRRL = (1U << 4); /* acende */
     }
