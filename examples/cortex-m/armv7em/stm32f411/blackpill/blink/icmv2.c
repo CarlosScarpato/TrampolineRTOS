@@ -527,7 +527,7 @@ FUNC(int, OS_APPL_CODE) main(void)
   leds_init();
   adc_init();
   buzzer_init();
-  otext(0, 0, "TRMPOLINE CLUSTER");
+  otext(3, 9, "TRAMPOLINE CLUSTER");
   StartOS(OSDEFAULTAPPMODE);
   return 0;
 }
@@ -550,24 +550,24 @@ TASK(Display)
   snap = ICM_Data;
   ReleaseResource(ICM_Resource);
 
-  otext(2, 0, "RPM:");
-  if (valid_m1) { u2s(snap.rpm, buf); otext(2, 48, buf); }
-  else          { otext(2, 48, "---  "); }
-
-  otext(3, 0, "VEL:");
-  if (valid_m2) { u2s((uint16_t)(snap.speed_x100 / 100U), buf); otext(3, 48, buf); }
-  else          { otext(3, 48, "---  "); }
-
-  otext(4, 0, "FUEL:");
-  if (valid_m3) { u2s((uint16_t)(snap.fuel_x2 / 2U), buf); otext(4, 48, buf); }
+  otext(4, 0, "RPM:");
+  if (valid_m1) { u2s(snap.rpm, buf); otext(4, 48, buf); }
   else          { otext(4, 48, "---  "); }
 
-  otext(5, 0, "TMP:");
+  otext(5, 0, "VEL:");
+  if (valid_m2) { u2s((uint16_t)(snap.speed_x100 / 100U), buf); otext(5, 48, buf); }
+  else          { otext(5, 48, "---  "); }
+
+  otext(6, 0, "FUEL:");
+  if (valid_m3) { u2s((uint16_t)(snap.fuel_x2 / 2U), buf); otext(6, 48, buf); }
+  else          { otext(6, 48, "---  "); }
+
+  otext(7, 0, "TMP:");
   if (valid_m3) {
     int16_t t = snap.temp;
     uint16_t tu = (t < 0) ? (uint16_t)(-t) : (uint16_t)t;
-    u2s(tu, buf); otext(5, 48, buf);
-  } else { otext(5, 48, "---  "); }
+    u2s(tu, buf); otext(7, 48, buf);
+  } else { otext(7, 48, "---  "); }
 
     /* --- barras graficas --- */
   /* --- barras graficas (sempre desenha; vazia se invalido) --- */
@@ -575,8 +575,8 @@ TASK(Display)
     uint8_t rpm_pct = 0, fuel_pct = 0;
     if (valid_m1) rpm_pct  = (uint8_t)((uint32_t)snap.rpm * 100U / 8000U);
     if (valid_m3) fuel_pct = (uint8_t)(snap.fuel_x2 / 2U);
-    obar(2, 90, 36, rpm_pct);    /* barra RPM: 0% se invalido -> vazia */
-    obar(4, 90, 36, fuel_pct);   /* barra FUEL */
+    obar(4, 90, 36, rpm_pct);    /* barra RPM: 0% se invalido -> vazia */
+    obar(6, 90, 36, fuel_pct);   /* barra FUEL */
   }
 
 
