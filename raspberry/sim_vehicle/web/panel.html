@@ -1,0 +1,74 @@
+<!doctype html><html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>ICM Cluster</title>
+<style>
+ *{box-sizing:border-box}
+ body{background:#0a0e14;color:#e0e0e0;font-family:system-ui,sans-serif;
+   text-align:center;margin:0;padding:12px;min-height:100vh}
+ h1{color:#4fc3f7;font-weight:300;letter-spacing:2px;font-size:clamp(18px,5vw,34px);margin:8px 0 16px}
+ .gauges{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+   gap:12px;max-width:900px;margin:0 auto}
+ .g{background:#131a24;border-radius:14px;padding:16px 12px;box-shadow:0 4px 16px #0006}
+ .val{font-size:clamp(34px,9vw,52px);font-weight:700;color:#fff;line-height:1}
+ .lbl{font-size:clamp(10px,2.6vw,13px);color:#78909c;letter-spacing:1px;margin-top:6px}
+ .unit{font-size:.8em;color:#90a4ae}
+ .bar{height:9px;background:#263238;border-radius:5px;margin-top:12px;overflow:hidden}
+ .fill{height:100%;transition:width .2s}
+ .warn{color:#ffb300}.crit{color:#ff5252}.ok{color:#69f0ae}
+ #status{margin:16px 0;font-size:14px;font-weight:600}
+ .ctrl{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));
+   gap:8px;max-width:620px;margin:0 auto;padding-bottom:20px}
+ .ctrl button{background:#1e2a38;color:#e0e0e0;border:1px solid #37474f;border-radius:10px;
+   padding:14px 10px;font-size:15px;cursor:pointer;transition:.15s;min-height:48px}
+ .ctrl button:active{transform:scale(.96)}
+ .ctrl .stop{background:#5c1e1e;border-color:#7a2a2a}
+ .ctrl button.active{background:#4fc3f7;color:#0a0e14;font-weight:700}
+</style></head><body>
+<h1>TRAMPOLINE ICM</h1>
+<div class="gauges">
+ <div class="g"><div class="val" id="rpm">0</div><div class="lbl">RPM</div>
+   <div class="bar"><div class="fill" id="rpmb" style="width:0%;background:#4fc3f7"></div></div></div>
+ <div class="g"><div class="val" id="spd">0</div><div class="lbl">VELOCIDADE <span class="unit">km/h</span></div>
+   <div class="bar"><div class="fill" id="spdb" style="width:0%;background:#69f0ae"></div></div></div>
+ <div class="g"><div class="val" id="fuel">0</div><div class="lbl">COMBUSTIVEL <span class="unit">%</span></div>
+   <div class="bar"><div class="fill" id="fuelb" style="width:0%;background:#ffb300"></div></div></div>
+ <div class="g"><div class="val" id="temp">0</div><div class="lbl">TEMPERATURA <span class="unit">C</span></div>
+   <div class="bar"><div class="fill" id="tempb" style="width:0%;background:#ff7043"></div></div></div>
+</div>
+<div id="status">conectando...</div>
+<div class="ctrl">
+ <button onclick="scn('normal',this)">Normal</button>
+ <button onclick="scn('timeout',this)">Timeout M2</button>
+ <button onclick="scn('range',this)">Fora de Faixa</button>
+ <button onclick="scn('frozen',this)">Counter Congelado</button>
+ <button class="stop" onclick="scn('stop',this)">Parar</button>
+</div>
+<script>
+ const $=id=>document.getElementById(id);
+ function connect(){
+  const ws=new WebSocket("ws://"+location.host+"/ws");
+  ws.onmessage=e=>{
+   const s=JSON.parse(e.data);
+   $("rpm").textContent=s.rpm;
+   $("rpm").className="val"+(s.rpm>8000?" crit":""); 
+   $("spd").textContent=Math.round(s.speed);
+   $("fuel").textContent=Math.round(s.fuel); $("temp").textContent=s.temp;
+   $("rpmb").style.width=Math.min(100,s.rpm/80)+"%";
+   $("spdb").style.width=Math.min(100,s.speed/2.5)+"%";
+   $("fuelb").style.width=Math.min(100,s.fuel)+"%";
+   $("tempb").style.width=Math.min(100,(s.temp+40)/1.9)+"%";
+   $("temp").className="val"+(s.temp>110?" crit":"");
+   $("fuel").className="val"+(s.fuel<10?" warn":"");
+   const st=$("status");
+   st.textContent=s.online?"● CAN ONLINE":"○ CAN OFFLINE";
+   st.className=s.online?"ok":"crit";
+  };
+  ws.onclose=()=>{$("status").textContent="reconectando...";setTimeout(connect,1000);};
+ }
+ function scn(s,btn){
+   fetch("/scenario/"+s);
+   document.querySelectorAll(".ctrl button").forEach(b=>b.classList.remove("active"));
+   if(s!=="stop") btn.classList.add("active");
+ }
+ connect();
+</script></body></html>

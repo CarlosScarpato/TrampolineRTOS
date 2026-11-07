@@ -1,0 +1,9 @@
+atmelStudio_blink
+blink
+build
+*_exe
+*.bin
+*.map
+make.py
+build.py
+CMakeLists.txt

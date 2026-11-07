@@ -1,0 +1,33 @@
+%
+template if exists tpl_library_defines
+%
+
+/*-----------------------------------------------------------------------------
+ * Use FLOAT truc instructions
+ */%
+let use_float := false
+foreach isr in ISRS do
+  if isr::USEFLOAT then
+    let use_float := true
+  end if
+end foreach
+
+foreach task in TASKS do
+  if task::USEFLOAT then
+    let use_float := true
+  end if
+end foreach
+%
+#define WITH_FLOAT     % !yesNo(use_float) %
+
+/*
+ * Power mode to be used in the idle task
+ */
+#define ACTIVE_POWER_MODE  -1
+#define EM1_POWER_MODE     0
+#define EM2_POWER_MODE     1
+#define EM3_POWER_MODE     2
+#define EM4_POWER_MODE     3
+
+
+#define IDLE_POWER_MODE   % ! OS::IDLE_POWER_MODE %_POWER_MODE

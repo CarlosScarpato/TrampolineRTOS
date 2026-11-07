@@ -1,0 +1,24 @@
+[submodule "machines/avr/arduino"]
+	path = machines/avr/arduino
+	url = https://github.com/TrampolineRTOS/ArduinoCore-avr.git
+[submodule "machines/riscv/pulpino/pulpino"]
+	path = machines/riscv/pulpino/pulpino
+	url = https://github.com/Instrumented-Pulpino/pulpino.git	
+[submodule "libraries/net/ethernet/lwip"]
+	path = libraries/net/ethernet/lwip
+	url = https://git.savannah.nongnu.org/git/lwip.git
+[submodule "goil/galgas-sources/GTL"]
+	path = goil/galgas-sources/GTL
+	url = https://github.com/TrampolineRTOS/GTL.git
+[submodule "machines/cortex-m/CMSIS-NN"]
+	path = machines/cortex-m/CMSIS-NN
+	url = https://github.com/ARM-software/CMSIS-NN
+[submodule "machines/cortex-m/CMSIS-DSP"]
+	path = machines/cortex-m/CMSIS-DSP
+	url = https://github.com/ARM-software/CMSIS-DSP
+[submodule "machines/cortex-m/CMSIS_5"]
+	path = machines/cortex-m/CMSIS_5
+	url = https://github.com/ARM-software/CMSIS_5
+[submodule "machines/cortex-m/tflite-micro"]
+	path = machines/cortex-m/tflite-micro
+	url = https://github.com/tensorflow/tflite-micro

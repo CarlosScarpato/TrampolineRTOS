@@ -1,0 +1,8 @@
+liquidCrystal
+build
+*_exe
+*.hex
+*.map
+make.py
+build.py
+CMakeLists.txt

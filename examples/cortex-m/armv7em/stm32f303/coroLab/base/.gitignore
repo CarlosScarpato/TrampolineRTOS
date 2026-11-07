@@ -1,0 +1,9 @@
+base
+build
+*.elf
+*.bin
+*.map
+.vscode
+make.py
+build.py
+CMakeLists.txt
