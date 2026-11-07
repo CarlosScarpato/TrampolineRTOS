@@ -5,7 +5,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU icmv2 {
+CPU icm_v1 {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -14,11 +14,11 @@ CPU icmv2 {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "icmv2.c";
-      APP_NAME = "icmv2_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "icm_v1.c";
+      APP_NAME = "icm_v1_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=icmv2.map";
+      LDFLAGS = "-Map=icm_v1.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";

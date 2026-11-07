@@ -14,7 +14,7 @@ CPU skeleton {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
+      TRAMPOLINE_BASE_PATH = "../..";
       APP_SRC = "skeleton.c";
       APP_NAME = "skeleton_exe";
       CFLAGS  = "-O0";
