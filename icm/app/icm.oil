@@ -16,6 +16,7 @@ CPU icm {
     BUILD = TRUE {
       TRAMPOLINE_BASE_PATH = "../..";
       APP_SRC = "icm.c";
+      APP_SRC = "icm_logic.c";
       APP_NAME = "icm_exe";
       CFLAGS  = "-O0";
       LDFLAGS = "-Map=icm.map";
