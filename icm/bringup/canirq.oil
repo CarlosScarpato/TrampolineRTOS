@@ -1,4 +1,3 @@
-
 OIL_VERSION = "2.5";
 
 IMPLEMENTATION trampoline {
@@ -6,7 +5,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU cantest {
+CPU canirq {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -15,11 +14,11 @@ CPU cantest {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "cantest.c";
-      APP_NAME = "cantest_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "canirq.c";
+      APP_NAME = "canirq_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=cantest.map";
+      LDFLAGS = "-Map=canirq.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";
@@ -37,11 +36,17 @@ CPU cantest {
 
   APPMODE std {};
 
-  TASK cantest   { PRIORITY = 2; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
+  TASK Task_CAN_RX {
+    PRIORITY = 6; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL;
+  };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
-  ALARM al_can { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = cantest; };
-                 AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 5; CYCLETIME = 5; }; };
-  ALARM al_hb  { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = heartbeat; };
-                 AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; }; };
+  ISR ISR_CAN {
+    CATEGORY = 2;
+    PRIORITY = 1;
+    SOURCE = EXTI1_IRQ { PIN = PB1 { TRIGGER = FALLING; PULL = UP; }; };
+  };
+
+  ALARM al_hb { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = heartbeat; };
+                AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; }; };
 };

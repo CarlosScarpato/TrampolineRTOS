@@ -5,7 +5,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU ledtest {
+CPU adctest {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -14,11 +14,11 @@ CPU ledtest {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "ledtest.c";
-      APP_NAME = "ledtest_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "adctest.c";
+      APP_NAME = "adctest_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=ledtest.map";
+      LDFLAGS = "-Map=adctest.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";
@@ -36,18 +36,18 @@ CPU ledtest {
 
   APPMODE std {};
 
-  TASK ledseq    { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
+  TASK adcread   { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
-  ALARM al_ledseq {
+  ALARM al_adcread {
     COUNTER = SystemCounter;
-    ACTION = ACTIVATETASK { TASK = ledseq; };
-    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 200;  CYCLETIME = 2000; };
+    ACTION = ACTIVATETASK { TASK = adcread; };
+    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 100; CYCLETIME = 100; };
   };
 
   ALARM al_heartbeat {
     COUNTER = SystemCounter;
     ACTION = ACTIVATETASK { TASK = heartbeat; };
-    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250;  CYCLETIME = 250; };
+    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; };
   };
 };

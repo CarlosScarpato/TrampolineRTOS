@@ -1,3 +1,4 @@
+
 OIL_VERSION = "2.5";
 
 IMPLEMENTATION trampoline {
@@ -5,7 +6,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU oledtest {
+CPU cantest {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -14,11 +15,11 @@ CPU oledtest {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "oledtest.c";
-      APP_NAME = "oledtest_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "cantest.c";
+      APP_NAME = "cantest_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=oledtest.map";
+      LDFLAGS = "-Map=cantest.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";
@@ -36,18 +37,11 @@ CPU oledtest {
 
   APPMODE std {};
 
-  TASK oledprobe { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
+  TASK cantest   { PRIORITY = 2; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
-  ALARM al_oledprobe {
-    COUNTER = SystemCounter;
-    ACTION = ACTIVATETASK { TASK = oledprobe; };
-    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 500; CYCLETIME = 500; };
-  };
-
-  ALARM al_heartbeat {
-    COUNTER = SystemCounter;
-    ACTION = ACTIVATETASK { TASK = heartbeat; };
-    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; };
-  };
+  ALARM al_can { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = cantest; };
+                 AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 5; CYCLETIME = 5; }; };
+  ALARM al_hb  { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = heartbeat; };
+                 AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; }; };
 };

@@ -5,7 +5,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU canirq {
+CPU ledtest {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -14,11 +14,11 @@ CPU canirq {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "canirq.c";
-      APP_NAME = "canirq_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "ledtest.c";
+      APP_NAME = "ledtest_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=canirq.map";
+      LDFLAGS = "-Map=ledtest.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";
@@ -36,17 +36,18 @@ CPU canirq {
 
   APPMODE std {};
 
-  TASK Task_CAN_RX {
-    PRIORITY = 6; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL;
-  };
+  TASK ledseq    { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
-  ISR ISR_CAN {
-    CATEGORY = 2;
-    PRIORITY = 1;
-    SOURCE = EXTI1_IRQ { PIN = PB1 { TRIGGER = FALLING; PULL = UP; }; };
+  ALARM al_ledseq {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = ledseq; };
+    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 200;  CYCLETIME = 2000; };
   };
 
-  ALARM al_hb { COUNTER = SystemCounter; ACTION = ACTIVATETASK { TASK = heartbeat; };
-                AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250; CYCLETIME = 250; }; };
+  ALARM al_heartbeat {
+    COUNTER = SystemCounter;
+    ACTION = ACTIVATETASK { TASK = heartbeat; };
+    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 250;  CYCLETIME = 250; };
+  };
 };

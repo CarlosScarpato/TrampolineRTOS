@@ -14,7 +14,7 @@ CPU icm {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
+      TRAMPOLINE_BASE_PATH = "../..";
       APP_SRC = "icm.c";
       APP_NAME = "icm_exe";
       CFLAGS  = "-O0";

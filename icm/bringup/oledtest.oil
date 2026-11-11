@@ -5,7 +5,7 @@ IMPLEMENTATION trampoline {
     ISR  { UINT32 STACKSIZE = 200 ; } ;
 };
 
-CPU adctest {
+CPU oledtest {
   OS config {
     STATUS = EXTENDED;
     PRETASKHOOK = FALSE;
@@ -14,11 +14,11 @@ CPU adctest {
     PAINT_REGISTERS = TRUE;
 
     BUILD = TRUE {
-      TRAMPOLINE_BASE_PATH = "../../../../../..";
-      APP_SRC = "adctest.c";
-      APP_NAME = "adctest_exe";
+      TRAMPOLINE_BASE_PATH = "../..";
+      APP_SRC = "oledtest.c";
+      APP_NAME = "oledtest_exe";
       CFLAGS  = "-O0";
-      LDFLAGS = "-Map=adctest.map";
+      LDFLAGS = "-Map=oledtest.map";
       COMPILER = "arm-none-eabi-gcc";
       ASSEMBLER = "arm-none-eabi-as";
       LINKER = "arm-none-eabi-ld";
@@ -36,13 +36,13 @@ CPU adctest {
 
   APPMODE std {};
 
-  TASK adcread   { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
+  TASK oledprobe { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
   TASK heartbeat { PRIORITY = 1; AUTOSTART = FALSE; ACTIVATION = 1; SCHEDULE = FULL; };
 
-  ALARM al_adcread {
+  ALARM al_oledprobe {
     COUNTER = SystemCounter;
-    ACTION = ACTIVATETASK { TASK = adcread; };
-    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 100; CYCLETIME = 100; };
+    ACTION = ACTIVATETASK { TASK = oledprobe; };
+    AUTOSTART = TRUE { APPMODE = std; ALARMTIME = 500; CYCLETIME = 500; };
   };
 
   ALARM al_heartbeat {

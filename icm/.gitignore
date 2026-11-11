@@ -1,0 +1,31 @@
+# ===== Gerados pelo goil e pelo build (nunca versionar) =====
+# O goil cria, ao lado do .oil, uma pasta com o nome dele (ex.: app/icm/)
+# e os scripts make.py, build.py e CMakeLists.txt.
+app/*/
+bringup/*/
+app/make.py
+app/build.py
+app/CMakeLists.txt
+bringup/make.py
+bringup/build.py
+bringup/CMakeLists.txt
+build/
+
+*_exe
+*.bin
+*.elf
+*.map
+*.o
+*.d
+
+# ===== Testes no host (Google Test / CMake) =====
+test/build/
+
+# ===== Python (Raspberry) =====
+__pycache__/
+*.pyc
+.venv/
+
+# ===== Sistema / editores =====
+.DS_Store
+*.swp
