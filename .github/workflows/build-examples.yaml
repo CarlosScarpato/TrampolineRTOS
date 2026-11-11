@@ -1,5 +1,6 @@
 name: Build compiler and examples
-on: [push, pull_request]
+# Desativado no projeto ICM (gastava minutos do Actions); roda so manualmente.
+on: [workflow_dispatch]
 env:
   # Create a new and unique cache for each run, otherwise the cache from the previous actions would be used
   CACHE_KEY: repo-${{ github.run_id }}
