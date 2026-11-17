@@ -1,0 +1,104 @@
+# CI do projeto ICM: testes no host (Google Test) e build do firmware para o STM32F411.
+name: ICM CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  host-tests:
+    name: Testes unitarios (Google Test)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar se ja existem testes
+        id: check
+        run: |
+          if [ -f icm/test/CMakeLists.txt ]; then echo "has_tests=true" >> "$GITHUB_OUTPUT";
+          else echo "has_tests=false" >> "$GITHUB_OUTPUT"; echo "::notice::icm/test ainda nao existe nesta branch"; fi
+
+      - name: Configurar e compilar
+        if: steps.check.outputs.has_tests == 'true'
+        run: |
+          cmake -S icm/test -B icm/test/build
+          cmake --build icm/test/build -j
+
+      - name: Rodar testes
+        if: steps.check.outputs.has_tests == 'true'
+        run: ctest --test-dir icm/test/build --output-on-failure -L unit
+
+      - name: Publicar relatorio JUnit
+        if: always() && steps.check.outputs.has_tests == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: junit-unit
+          path: icm/test/build/junit/
+
+      - name: Resumo no PR
+        if: always() && steps.check.outputs.has_tests == 'true'
+        run: |
+          {
+            echo "## Testes unitarios do ICM"
+            echo '```'
+            ctest --test-dir icm/test/build -L unit 2>&1 | tail -n 5
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  target-build:
+    name: Build do firmware (goil + arm-none-eabi)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Submodulo CMSIS_5 (core_cm4.h)
+        run: git submodule update --init --depth 1 machines/cortex-m/CMSIS_5
+
+      - name: Instalar toolchain ARM
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+          arm-none-eabi-gcc --version | head -n 1
+
+      - name: Cache do goil
+        id: goil-cache
+        uses: actions/cache@v4
+        with:
+          path: goil/makefile-unix/goil
+          key: goil-${{ runner.os }}-${{ hashFiles('goil/build/**', 'goil/galgas-sources/**') }}
+
+      - name: Compilar goil
+        if: steps.goil-cache.outputs.cache-hit != 'true'
+        working-directory: goil/makefile-unix
+        run: python3 build.py
+
+      - name: Gerar codigo com goil
+        working-directory: icm/app
+        run: ../../goil/makefile-unix/goil --target=cortex-m/armv7em/stm32f411/blackpill --templates=../../goil/templates/ icm.oil
+
+      - name: Compilar firmware
+        working-directory: icm/app
+        run: python3 make.py
+
+      - name: Tamanho (flash/RAM)
+        working-directory: icm/app
+        run: |
+          {
+            echo "## Firmware ICM"
+            echo '```'
+            arm-none-eabi-size icm_exe
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Publicar binario
+        uses: actions/upload-artifact@v4
+        with:
+          name: icm-firmware
+          path: |
+            icm/app/icm_exe
+            icm/app/icm_exe.bin
+            icm/app/icm.map

@@ -1,5 +1,6 @@
 name: Build ViPER (Virtual Processor EmulatoR)
-on: [push, pull_request]
+# Desativado no projeto ICM (gastava minutos do Actions); roda so manualmente.
+on: [workflow_dispatch]
 
 jobs:
   viper:
